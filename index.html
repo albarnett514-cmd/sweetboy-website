@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png?v=1">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png?v=1">
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png?v=1">
-  <link rel="stylesheet" href="style.css?v=48">
+  <link rel="stylesheet" href="style.css?v=49">
 </head>
 <body>
 
@@ -170,7 +170,7 @@
 
       var NAT_W = 2276, NAT_H = 1519; // natural size of 00720_21.jpg
       var FOOT_FX = 0.336;            // horizontal point in the image (her foot/toe)
-      var FOOT_FY = 0.57;             // vertical point in the image the text sits at
+      var BOTTOM_FY = 0.636;          // image fraction the text's BOTTOM is anchored to (just above the foot)
       var OBJ_POS_X = 0.50;           // object-position horizontal: center
       var OBJ_POS_Y = 0.52;           // object-position vertical: 52%
 
@@ -179,6 +179,7 @@
       var NAT_W100 = 454;             // width of "SWEET BOY" at REF_FONT px
       var LEFT_MARGIN = 48;           // keep text this far from the left edge
       var OVERLAP = 50;               // text right edge sits this far past the foot
+      var FONT_V_RATIO = 0.092;       // cap font to this fraction of the figure so it never overgrows
       var MIN_FONT = 40, MAX_FONT = 104;
 
       function place() {
@@ -199,14 +200,18 @@
 
         var rightEdge = footX + OVERLAP;
         var avail = rightEdge - LEFT_MARGIN;
-        var font = Math.max(MIN_FONT, Math.min(MAX_FONT, REF_FONT * avail / NAT_W100));
+        // Font: fit horizontally, but never larger than a fraction of the figure (prevents
+        // the text overgrowing into the foot on wide/short windows).
+        var font = Math.max(MIN_FONT, Math.min(MAX_FONT, REF_FONT * avail / NAT_W100, rendH * FONT_V_RATIO));
         var w = NAT_W100 * font / REF_FONT;
-        var left = rightEdge - w;
-        if (left < LEFT_MARGIN) left = LEFT_MARGIN;
+        var left = Math.max(LEFT_MARGIN, rightEdge - w);
 
         name.style.fontSize = font + 'px';
+        // Anchor the text BOTTOM just above the foot so it can never dip onto it,
+        // regardless of font size — the text grows upward from this point.
+        var textH = name.getBoundingClientRect().height;
         text.style.left = left + 'px';
-        text.style.top  = (offsetY + rendH * FOOT_FY) + 'px';
+        text.style.top  = (offsetY + rendH * BOTTOM_FY - textH) + 'px';
       }
 
       if (window.ResizeObserver) {

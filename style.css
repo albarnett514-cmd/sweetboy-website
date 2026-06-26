@@ -24,8 +24,15 @@
   --max-w:      1080px;
   --gutter:     clamp(24px, 5vw, 72px);
   --section-v:  clamp(40px, 6vw, 72px);
+  /* Horizontal inset for content sections. On desktop it reserves a left
+     column wide enough to clear the fixed nav so content never slides under it. */
+  --content-x:  var(--gutter);
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 761px) {
+  :root { --content-x: clamp(150px, 14vw, 200px); }
 }
 
 /* ── RESET ── */
@@ -224,12 +231,11 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
 }
 
 /* ── SECTION BASE ── */
-.section { padding: var(--section-v) 0; }
+.section { padding: var(--section-v) var(--content-x); }
 
 .section-inner {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 var(--gutter);
 }
 
 .section-label {
@@ -402,7 +408,7 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
 /* ── FOOTER ── */
 #site-footer {
   border-top: 1px solid var(--border);
-  padding: clamp(36px, 5vw, 56px) var(--gutter);
+  padding: clamp(36px, 5vw, 56px) var(--content-x);
 }
 .footer-inner {
   max-width: var(--max-w);
